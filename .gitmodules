@@ -1,0 +1,3 @@
+[submodule "gcache"]
+	path = gcache
+	url = https://repo.ronella.xyz/git/gosu/gcache.git/

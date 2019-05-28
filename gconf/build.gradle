@@ -1,0 +1,27 @@
+plugins {
+    id "org.gosu-lang.gosu" version "0.3.10"
+}
+
+group 'xyz.ronella.gosu'
+version '1.0-SNAPSHOT'
+
+repositories {
+    maven {
+        url 'https://repo.ronella.xyz/archiva/repository/internal/'
+        credentials {
+            username "${archivaUsername}"
+            password "${archivaPassword}"
+        }
+    }
+    maven {
+        url 'https://repo.ronella.xyz/archiva/repository/snapshots/'
+        credentials {
+            username "${archivaUsername}"
+            password "${archivaPassword}"
+        }
+    }
+}
+
+dependencies {
+    compile group: 'org.gosu-lang.gosu', name: 'gosu-core-api', version: '1.13.29'
+}
