@@ -42,6 +42,7 @@ class ConfigurationTest extends gw.testharness.TestBase {
     var properties = conf.loadProperties()
     assertEquals("env-prop1", properties.get("prop1"))
     assertEquals("sys-prop2", properties.get("prop2"))
+    assertEquals("",properties.get("prop3"))
   }
 
   function testGetProp() {
