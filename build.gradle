@@ -1,0 +1,63 @@
+import java.nio.file.Paths
+
+plugins {
+    id "org.gosu-lang.gosu" version "0.3.10"
+}
+
+group 'xyz.ronella.gosu'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    maven {
+        url 'https://repo.ronella.xyz/artifactory/java-central/'
+        credentials {
+            username "${artifactoryUsername}"
+            password "${artifactoryPassword}"
+        }
+    }
+    maven {
+        url 'https://repo.ronella.xyz/archiva/repository/snapshots/'
+        credentials {
+            username "${archivaUsername}"
+            password "${archivaPassword}"
+        }
+    }
+}
+
+dependencies {
+    compile group: 'org.gosu-lang.gosu', name: 'gosu-core', version: '1.13.29'
+    compile group: 'xyz.ronella.gosu', name: 'gcache', version: '1.0.1-SNAPSHOT'
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+
+    testCompile group: 'org.gosu-lang.gosu', name: 'gosu-test', version: '1.13.29'
+    testCompile group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.9.1'
+}
+
+task preparePackage(dependsOn: [jar]) {
+    doLast {
+        def srcDir = sourceSets.main.gosu.sourceDirectories.asPath
+        def destDir = Paths.get(buildDir.absolutePath, "gosu")
+
+        copy {
+            from srcDir
+            into destDir
+        }
+    }
+}
+
+task jarGosu(dependsOn: [preparePackage]) {
+    doLast {
+        def srcDir = Paths.get(buildDir.absolutePath, "gosu")
+        def jarFile = "${project.name}-${version}-gosu.jar"
+        def outputFile = Paths.get(buildDir.absolutePath, "gosu-libs", jarFile)
+
+        ant.zip(destfile: outputFile) {
+            fileset(dir: srcDir)
+        }
+    }
+}
+
+//compileGosu.finalizedBy(preparePackage)
+jar.finalizedBy(jarGosu)

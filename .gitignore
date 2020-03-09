@@ -4,3 +4,4 @@ gcache.prj
 .idea/
 build/
 gconfig.iml
+logs/

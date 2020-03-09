@@ -53,7 +53,7 @@ class Configuration {
   }
 
   private static property get ConfigProps() : ResourceBundle {
-    var confProps = Configuration.Class.getClassLoader().getResourceAsStream("gconf.properties")
+    var confProps = Configuration.Type.Class.ClassLoader.getResourceAsStream("gconf.properties")
     if (null == confProps) {
       return null
     }
@@ -64,7 +64,7 @@ class Configuration {
 
   public static property get DefaultConfDir() : String {
     var fromEnv = System.getenv("GCONF_DIR")
-    var fromConf = fromEnv?:ConfigProps?.getString("ConfDir")?:Paths.get(".", {}).toAbsolutePath().toString()
+    var fromConf = fromEnv?:ConfigProps?.getString("ConfDir")?:Paths.get(".", {"gconf"}).toAbsolutePath().toString()
     return fromConf
   }
 
@@ -82,7 +82,9 @@ class Configuration {
               while(true) {
                 try {
                   CONFIG_LAST_MODIFIED.Keys?.each(\ ___filename -> {
-                    LOG.trace(\ -> "Checking ${___filename} modification date.")
+                    if (LOG.TraceEnabled) {
+                      LOG.trace("Checking ${___filename} modification date.")
+                    }
                     var prevLastModified = CONFIG_LAST_MODIFIED.get(___filename)
                     var lastModified = new File(___filename).lastModified()
                     if (prevLastModified != lastModified) {
@@ -137,7 +139,9 @@ class Configuration {
   }
 
   function loadProperties() : Map<String, String> {
-    LOG.debug(\ -> "function loadProperties() : Map<String, String>")
+    if (LOG.DebugEnabled) {
+      LOG.debug("function loadProperties() : Map<String, String>")
+    }
 
     var props : Map<String, String>
     var isDirty : boolean
@@ -156,9 +160,8 @@ class Configuration {
       isDirty = PREFIX_DIRTY.get(_prefix)
     }
 
-    var encodeName = \ ___configFile : String -> {
-      return URLEncoder.encode(___configFile, "UTF-8")
-    }
+    var encodeName = \ ___configFile : String -> URLEncoder.encode(___configFile, "UTF-8")
+
 
     if (props==null || isDirty) {
       using (LOCK_CLASS) {
@@ -180,11 +183,15 @@ class Configuration {
 
           configFiles()?.each(\ ___configFile -> {
             var encodedName = encodeName(___configFile)
-            LOG.debug(\ -> "Loading ${___configFile}")
+            if (LOG.DebugEnabled) {
+              LOG.debug("Loading ${___configFile}")
+            }
             var resource = loadProperties(___configFile)
             resource?.Keys?.toList()?.each(\ ___key -> {
               var value = resource.getString(___key)
-              LOG.trace("\t${___key}=${value}")
+              if (LOG.TraceEnabled) {
+                LOG.trace("\t${___key}=${value}")
+              }
               props.put(___key, value)
             })
             CONFIG_LAST_MODIFIED.put(encodedName, new File(___configFile).lastModified())

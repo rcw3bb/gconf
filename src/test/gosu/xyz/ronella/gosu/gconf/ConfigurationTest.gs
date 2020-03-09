@@ -1,18 +1,14 @@
 package xyz.ronella.gosu.gconf
 
-uses gw.testharness.RunLevel
-uses gw.api.system.server.Runlevel
-uses java.io.File
 uses java.nio.file.Paths
+uses gw.test.TestClass
 
-@gw.testharness.ServerTest
-@RunLevel(Runlevel.SHUTDOWN)
-class ConfigurationTest extends gw.testharness.TestBase {
+class ConfigurationTest extends TestClass {
 
-  private static final var CONF_DIR : String = Paths.get(".", {"modules", "configuration", "gtest", "xyz", "ronella", "gosu", "gconf"}).toString()
+  private static final var CONF_DIR : String = Paths.get(".", {"src", "test", "gosu", "xyz", "ronella", "gosu", "gconf"}).toString()
 
-  override function beforeMethod() {
-    super.beforeMethod()
+  override function beforeTestMethod() {
+    super.beforeTestMethod()
     Configuration.clear("dummy")
   }
 
