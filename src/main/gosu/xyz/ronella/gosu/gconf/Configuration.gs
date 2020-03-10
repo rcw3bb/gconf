@@ -28,6 +28,7 @@ class Configuration {
   private static final var CONFIG_LAST_MODIFIED : Map<String, Long> = new ConcurrentLRUCache<String, Long>("gconf.last_modified", DEFAULT_CACHE_SIZE/2)
   private static final var PREFIX_FILE_MAPPING : Map<String, String> = new ConcurrentLRUCache<String, String>("gconf.file_mapping", DEFAULT_CACHE_SIZE/2)
   private static final var CURRENT_PROFILE : Map<String, String> = new ConcurrentLRUCache<String, String>("gconf.profile", 1)
+  private static final var DEFAULT_CONF_DIR = Paths.get(".", {"gconf"}).toAbsolutePath().toString()
 
   private static final var LOCK_CLASS : Lock = new ReentrantLock()
 
@@ -37,7 +38,15 @@ class Configuration {
   protected var _environment : String
   protected var _confDir : String
 
-  public final static var DEFAULT_PREFIX : String = ConfigProps?.getString("DefaultPrefix")?:"application"
+  public final static var DEFAULT_PREFIX : String = (\-> {
+    final var DEFAULT_NAME = "application"
+    var output = ConfigProps?.getString("DefaultPrefix")?:DEFAULT_NAME
+    if (output=="") {
+      output=DEFAULT_NAME
+    }
+    return output
+  })()
+
   public final static var DEFAULT_PROFILE : String = ConfigProps?.getString("DefaultProfile")?:""
 
   construct() {
@@ -64,7 +73,14 @@ class Configuration {
 
   public static property get DefaultConfDir() : String {
     var fromEnv = System.getenv("GCONF_DIR")
-    var fromConf = fromEnv?:ConfigProps?.getString("ConfDir")?:Paths.get(".", {"gconf"}).toAbsolutePath().toString()
+    var confDir = ConfigProps?.getString("ConfDir")?:DEFAULT_CONF_DIR
+    if (confDir=="") {
+      confDir=DEFAULT_CONF_DIR
+    }
+    var fromConf = fromEnv?:confDir
+    if (LOG.TraceEnabled) {
+      LOG.trace("ConfDir: " + fromConf)
+    }
     return fromConf
   }
 
@@ -103,7 +119,13 @@ class Configuration {
                   LOG.error(ex.StackTraceAsString)
                 }
                 finally {
-                  Thread.sleep(Integer.valueOf(ConfigProps?.getString("ConfigMonitorDelay")?:"5") * 1000)
+                  final var DEFAULT_DELAY="5"
+                  var delay = (ConfigProps?.getString("ConfigMonitorDelay")?:DEFAULT_DELAY)
+                  if (delay=="") {
+                    delay=DEFAULT_DELAY
+                  }
+                  var delayInt = Integer.valueOf(delay);
+                  Thread.sleep(Integer.valueOf(delayInt * 1000))
                 }
               }
             }
