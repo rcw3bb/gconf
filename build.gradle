@@ -17,18 +17,11 @@ repositories {
             password "${artifactoryPassword}"
         }
     }
-    maven {
-        url 'https://repo.ronella.xyz/archiva/repository/snapshots/'
-        credentials {
-            username "${archivaUsername}"
-            password "${archivaPassword}"
-        }
-    }
 }
 
 dependencies {
     compile group: 'org.gosu-lang.gosu', name: 'gosu-core', version: '1.13.29'
-    compile group: 'xyz.ronella.gosu', name: 'gcache', version: '1.0.1-SNAPSHOT'
+    compile group: 'xyz.ronella.gosu', name: 'gcache', version: '1.0.1'
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
 
     testCompile group: 'org.gosu-lang.gosu', name: 'gosu-test', version: '1.13.29'
@@ -59,5 +52,4 @@ task jarGosu(dependsOn: [preparePackage]) {
     }
 }
 
-//compileGosu.finalizedBy(preparePackage)
 jar.finalizedBy(jarGosu)
