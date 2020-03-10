@@ -49,15 +49,15 @@ class Configuration {
 
   public final static var DEFAULT_PROFILE : String = ConfigProps?.getString("DefaultProfile")?:""
 
-  construct() {
+  public construct() {
     this(Configuration.DEFAULT_PREFIX)
   }
 
-  construct(prefix : String) {
+  public construct(prefix : String) {
     this(prefix, "")
   }
 
-  construct(prefix : String, profile : String) {
+  public construct(prefix : String, profile : String) {
     this(DefaultConfDir, prefix, profile)
   }
 
@@ -84,10 +84,10 @@ class Configuration {
     return fromConf
   }
 
-  construct(confDir : String, prefix : String, environment : String) {
+  public construct(confDir : String, prefix : String, profile : String) {
     this._confDir = "${confDir}"
     this._prefix = prefix
-    this._environment = environment?:DEFAULT_PROFILE
+    this._environment = profile?:DEFAULT_PROFILE
 
     if (!_monitorRunning && (Boolean.valueOf(ConfigProps?.getString("Hot")?:"true"))) {
       using(LOCK_CLASS) {
@@ -138,7 +138,7 @@ class Configuration {
     }
   }
 
-  function configFiles() : List<String> {
+  protected function configFiles() : List<String> {
     var confFiles : List<String> = {}
 
     var defaultConf = Paths.get(_confDir, {"${_prefix}.conf"}).toFile()
@@ -160,7 +160,7 @@ class Configuration {
     return confFiles
   }
 
-  function loadProperties() : Map<String, String> {
+  protected function loadProperties() : Map<String, String> {
     if (LOG.DebugEnabled) {
       LOG.debug("function loadProperties() : Map<String, String>")
     }
@@ -183,7 +183,6 @@ class Configuration {
     }
 
     var encodeName = \ ___configFile : String -> URLEncoder.encode(___configFile, "UTF-8")
-
 
     if (props==null || isDirty) {
       using (LOCK_CLASS) {
@@ -228,11 +227,11 @@ class Configuration {
     return props.copy()
   }
 
-  function getProp(prop : String) : String {
+  public function getProp(prop : String) : String {
     return loadProperties()?.get(prop)?.trim()
   }
 
-  function loadProperties(confFile : String) : ResourceBundle {
+  protected function loadProperties(confFile : String) : ResourceBundle {
     var confFileInstance = new File(confFile)
     var properties : ResourceBundle
 
@@ -247,7 +246,7 @@ class Configuration {
     return properties
   }
 
-  static function clear(prefix : String) {
+  public static function clear(prefix : String) {
     if (PREFIX_DIRTY.Keys?.contains(prefix) && !PREFIX_DIRTY.get(prefix)) {
       using(LOCK_CLASS) {
         if (!PREFIX_DIRTY.get(prefix)) {
@@ -257,40 +256,40 @@ class Configuration {
     }
   }
 
-  static function get(confDir : String, prefix : String, profile : String, prop : String) : String {
+  public static function get(confDir : String, prefix : String, profile : String, prop : String) : String {
     return new Configuration(confDir, prefix, profile).getProp(prop)
   }
 
-  static function get(prefix : String, profile: String, prop : String) : String {
+  public static function get(prefix : String, profile: String, prop : String) : String {
     return Configuration.get(Configuration.DefaultConfDir, prefix, profile, prop)
   }
 
-  static function get(prefix : String, prop : String) : String {
+  public static function get(prefix : String, prop : String) : String {
     return Configuration.get(Configuration.DefaultConfDir, prefix, Configuration.DEFAULT_PROFILE, prop)
   }
 
-  static function get(prop : String) : String {
+  public static function get(prop : String) : String {
     return Configuration.get(Configuration.DEFAULT_PREFIX, prop)
   }
 
-  static function parseDate(strDate : String) : Date {
+  public static function parseDate(strDate : String) : Date {
     var odbcFormat = "yyyy-MM-dd"
     return strDate==null ? null : new SimpleDateFormat(odbcFormat).parse(strDate)
   }
 
-  static function getDate(confDir : String, prefix : String, environment : String, prop : String) : Date {
+  public static function getDate(confDir : String, prefix : String, environment : String, prop : String) : Date {
     return parseDate(Configuration.get(confDir, prefix, environment, prop))
   }
 
-  static function getDate(prefix : String, env: String, prop : String) : Date {
+  public static function getDate(prefix : String, env: String, prop : String) : Date {
     return parseDate(Configuration.get(Configuration.DefaultConfDir, prefix, env, prop))
   }
 
-  static function getDate(prefix : String, prop : String) : Date {
+  public static function getDate(prefix : String, prop : String) : Date {
     return parseDate(Configuration.get(prefix, Configuration.DEFAULT_PROFILE, prop))
   }
 
-  static function getDate(prop : String) : Date {
+  public static function getDate(prop : String) : Date {
     return parseDate(Configuration.get(Configuration.DEFAULT_PREFIX, prop))
   }
 }
