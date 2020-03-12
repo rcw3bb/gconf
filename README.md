@@ -114,7 +114,7 @@ Add the following **maven** dependency to your **gosu** project:
 
 #### Retrieving the Prop1 String Value from Default Configuration File *(i.e. application.conf)*
 
-```
+```gosu
 Configuration.get("Prop1")
 ```
 
