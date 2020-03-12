@@ -1,6 +1,6 @@
 # GConf
 
-A simple gosu configuration manager.
+A simple gosu implementation of configuration manager.
 
 ## Public Constructors
 
