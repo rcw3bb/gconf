@@ -272,7 +272,7 @@ class Configuration {
     return Configuration.get(Configuration.DEFAULT_PREFIX, prop)
   }
 
-  public static function parseDate(strDate : String) : Date {
+  private static function parseDate(strDate : String) : Date {
     var odbcFormat = "yyyy-MM-dd"
     return strDate==null ? null : new SimpleDateFormat(odbcFormat).parse(strDate)
   }
