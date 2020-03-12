@@ -56,7 +56,7 @@ The properties file that can control the behavior of the **Configuration** insta
 
 #### Sample gconf.properties File
 
-```gosu
+```properties
 #The default configuration directory to be looked at.
 ConfDir=.\\gconf
 
