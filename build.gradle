@@ -2,10 +2,12 @@ import java.nio.file.Paths
 
 plugins {
     id "org.gosu-lang.gosu" version "0.3.10"
+    id "com.bmuschko.nexus" version "2.3.1"
+    id "io.codearte.nexus-staging" version "0.21.1"
 }
 
 group 'xyz.ronella.gosu'
-version '1.0-SNAPSHOT'
+version '1.0.0'
 
 sourceCompatibility = 1.8
 
@@ -17,6 +19,53 @@ repositories {
             password "${artifactoryPassword}"
         }
     }
+}
+
+modifyPom {
+    project {
+        name 'GConf'
+        description 'A simple gosu implementation of configuration manager.'
+        url 'https://github.com/rcw3bb/gconf'
+        inceptionYear '2020'
+
+        scm {
+            url 'https://github.com/rcw3bb/gconf'
+            connection 'https://github.com/rcw3bb/gconf.git'
+            developerConnection 'https://github.com/rcw3bb/gconf.git'
+        }
+
+        licenses {
+            license {
+                name 'MIT License'
+                url 'https://github.com/rcw3bb/gconf/blob/master/LICENSE.md'
+                distribution 'repo'
+            }
+        }
+
+        developers {
+            developer {
+                id 'rcw3bb'
+                name 'Ronaldo Webb'
+                email 'ronaldo.c.webb@gmail.com'
+            }
+        }
+    }
+}
+
+extraArchive {
+    sources = true
+    tests = true
+    javadoc = true
+}
+
+nexus {
+    sign = true
+    repositoryUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
+    snapshotRepositoryUrl = 'https://oss.sonatype.org/content/repositories/snapshots'
+}
+
+nexusStaging {
+    stagingProfileId = "33650220e7857c"
 }
 
 dependencies {
@@ -43,11 +92,26 @@ task preparePackage(dependsOn: [jar]) {
 task jarGosu(dependsOn: [preparePackage]) {
     doLast {
         def srcDir = Paths.get(buildDir.absolutePath, "gosu")
-        def jarFile = "${project.name}-${version}-gosu.jar"
-        def outputFile = Paths.get(buildDir.absolutePath, "gosu-libs", jarFile)
+        def jarFilename ="${project.name}-${version}"
+        def jarGosuFile = "${jarFilename}-gosu.jar"
+        def javaLibsDir = Paths.get(buildDir.absolutePath, "java-libs")
+        def gosuLibsDir = Paths.get(buildDir.absolutePath, "gosu-libs")
+        def outputGosuFile = Paths.get(gosuLibsDir.toFile().absolutePath, jarGosuFile)
+        def libsDir = Paths.get(buildDir.absolutePath, "libs")
+        def outputFile = Paths.get(libsDir.toFile().absolutePath, "${jarFilename}.jar")
 
-        ant.zip(destfile: outputFile) {
+        ant.zip(destfile: outputGosuFile) {
             fileset(dir: srcDir)
+        }
+
+        ant.move file: outputFile, toDir: javaLibsDir
+
+        copy {
+            from outputGosuFile
+            into libsDir
+            rename { filename ->
+                filename.replace jarGosuFile, "${jarFilename}.jar"
+            }
         }
     }
 }
