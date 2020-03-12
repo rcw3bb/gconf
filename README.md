@@ -1,4 +1,4 @@
-# GConf
+# GConfig
 
 A simple gosu implementation of configuration manager.
 
@@ -103,13 +103,13 @@ Add the following **maven** dependency to your **gosu** project:
 | Property    | Value            |
 | ----------- | ---------------- |
 | Group ID    | xyz.ronella.gosu |
-| Artifact ID | gconf            |
+| Artifact ID | gconfig          |
 | Version     | 1.0.0            |
 
 > Using gradle, this can be added as a dependency entry like the following:
 >
 > ```groovy
-> compile group: 'xyz.ronella.gosu', name: 'gconf', version: '1.0.0'
+> compile group: 'xyz.ronella.gosu', name: 'gconfig', version: '1.0.0'
 > ```
 
 #### Retrieving the Prop1 String Value from Default Configuration File *(i.e. application.conf)*
