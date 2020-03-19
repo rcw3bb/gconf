@@ -109,7 +109,7 @@ Add the following **maven** dependency to your **gosu** project:
 > Using gradle, this can be added as a dependency entry like the following:
 >
 > ```groovy
-> compile group: 'xyz.ronella.gosu', name: 'gconfig', version: '1.0.0'
+> compile group: 'xyz.ronella.gosu', name: 'gconfig', version: '1.1.0'
 > ```
 
 #### Retrieving the Prop1 String Value from Default Configuration File *(i.e. application.conf)*
